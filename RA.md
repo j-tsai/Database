@@ -54,3 +54,20 @@
     (\select_{age >= 24} Person 
      \join Eats)
 )
+
+//7 Find the age of the oldest person (or people) who eat mushroom pizza. 
+\rename_{a1}(
+    \project_{age} (
+        \project_{name} (
+            \select_{pizza='mushroom'} Eats) \join Person))
+\diff
+\project_{a1}(\rename_{a1}(
+    \project_{age} (
+        \project_{name} (
+            \select_{pizza='mushroom'} Eats) \join Person))
+\join_{a2>a1} // \join_{a2 < a1} would give the youngest person
+\rename_{a2}(
+    \project_{age} (
+        \project_{name} (
+            \select_{pizza='mushroom'} Eats) \join Person))
+)
