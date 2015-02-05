@@ -71,3 +71,31 @@
         \project_{name} (
             \select_{pizza='mushroom'} Eats) \join Person))
 )
+
+
+//8 Find all pizzerias that serve only pizzas eaten by people over 30.
+\project_{pizzeria} Serves
+\diff
+\project_{pizzeria} (
+    Serves
+    \join
+    ((\project_{pizza} Serves)
+        \diff
+       (\project_{pizza}((
+            \select_{age > '30'} Person) \join Eats)))
+)
+
+//9 Find all pizzerias that serve every pizza eaten by people over 30. (Division)
+\project_{pizzeria} Serves
+\diff
+(\project_{pizzeria}( 
+	(\project_{pizzeria} Serves) //all pizzeria
+	//all pizzeria and pizza eaten by >30 cartesian products
+	\cross // \join
+	(\project_{pizza}( //all pizza eaten by >30
+		\select_{age > '30'} Person \join Eats))
+	\diff
+	(\project_{pizzeria, pizza}( //pizzeria that serves pizza eaten by >30
+		\select_{age > '30'} Person \join Eats \join Serves))	
+	)
+)
