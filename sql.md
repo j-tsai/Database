@@ -65,3 +65,10 @@ from ( select avg(avgMovie) as avgRating
                 where Rating.mID = Movie.mID
                 and Movie.year > 1980
                 group by Movie.mID)) as after1980;
+
+
+
+select name
+from Reviewer join Rating using(rID)
+group by name
+having count(name) >= 3;
