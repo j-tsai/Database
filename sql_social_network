@@ -13,4 +13,21 @@ select name
 from highschooler h join friend f on h.id = f.id2
   where f.id1 in (select id from highschooler where name = 'Gabriel');
 
-//For every student who likes someone 2 or more grades younger than themselves, return that student's name and grade, and the name and grade of the student they like.
+//For every student who likes someone 2 or more grades younger than themselves, 
+//return that student's name and grade, and the name and grade of the student they like.
+select h.name, h.grade, l.name, l.grade
+from highschooler h
+  join ( select * from highschooler h join likes l on h.id = l.id2) l on h.id = l.id1
+  where h.grade >= l.grade + 2;    
+
+//For every pair of students who both like each other, return the name and grade of 
+//both students. Include each pair only once, with the two names in alphabetical order. 
+select h1.name, h1.grade, h2.name, h2.grade
+from  (select id1, id2 from likes
+    where id1 in (select id2 from likes)
+    and id2 in (select id1 from likes)) l
+    join
+    highschooler h1 join highschooler h2
+    on h1.id = l.id1 and h2.id = l.id2 and h1.name < h2.name;
+    
+//    
