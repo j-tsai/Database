@@ -67,12 +67,59 @@ join friend f1 join friend f2 join likes
   and h2.id = f2.id1 and h3.id = f2.id2;
   
 //Find the difference between the number of students in the school and the number of different first names. 
-select c_id - c_name
-from (select count(id) from highschool),
-(select count(distinct name) from highschool);
+select count(id) - count(distinct name) from highschooler;
 
 //Find the name and grade of all students who are liked by more than one other student.
 select name, grade from highschooler
 where id in (select id2 from likes
              group by id2
              having count(id1) > 1);
+
+
+
+//*********** EXTRA ***********//
+
+//For every situation where student A likes student B, but student 
+//B likes a different student C, return the names and grades of A, B, and C. 
+ select h1.name, h1.grade, h2.name, h2.grade, h3.name, h3.grade
+ from highschooler h1 join highschooler h2 join highschooler h3
+ join likes l1 join likes l2
+ on 
+ h1.id = l1.id1 and h2.id = l1.id2 and h3.id = l2.id2 and l1.id2 = l2.id1
+ and l1.id1 <> l2.id2;
+ 
+//Find those students for whom all of their friends are in different 
+//grades from themselves. Return the students' names and grades. 
+select distinct name, grade from highschooler
+where id not in  (select h1.id from highschooler h1 join highschooler h2 join friend f
+                  on h1.id = f.id1 and h2.id = f.id2 and h1.grade = h2.grade);
+                  
+//What is the average number of friends per student? (Your result should be just one number.) 
+select avg(c.num)
+from (select count(id2) as num from friend
+group by id1) c;
+
+//Find the number of students who are either friends with Cassandra or are friends of friends of Cassandra. 
+//Do not count Cassandra, even though technically she is a friend of a friend.
+select count(id2) from friend 
+where id1 in ( 
+  select id1 from friend where id2 in
+      (select id from highschooler where name='Cassandra')
+  )
+and id1 not in (select id from highschooler where name='Cassandra')
+
+
+//Find the name and grade of the student(s) with the greatest number of friends. 
+select name, grade
+from highschooler h join friend f on h.id = f.id1
+group by f.id1
+having count(f.id2) = (select max(f.c) from 
+                            (select count(id2) as c from friend 
+                            group by id1) f);
+                            
+                            
+create table f as (select id1, count(id2) as c 
+                  from friend group by id1);
+select name, grade from highschooler 
+where id in (select id1 from f 
+              where f.c = (select max(c) from f));
