@@ -1,0 +1,19 @@
+schema:
+accepts ( time, accept_id, send_id) 
+requests ( time, send_id, receive_id)
+
+create temporary table f as
+select frd_uid, n_frd
+	from (
+		select accepts.send_id as frd_id, count(accepts.send_id) as n_frd
+		from accepts, requests where accepts.send_id = requests.send_id and accept_id = receive_id
+		group by accepts.send_id
+		union all
+		select accept_id as frd_uid, count(accept_id) as n_frd
+		from accepts
+		group by accept_id
+	)
+	group by frd_id
+
+select frd_id, n_frd from f
+where n_frd = (select max(n_frd) from f)
