@@ -1,0 +1,16 @@
+schema:
+dialoglog(uid int, appid int, type char {"imp" or "click"}, ds timestamp)
+
+create table dialoglog (uid integer, appid integer, type char)
+insert into dialoglog ('uid', 'appid', 'type') values(990, 123, 'click')
+
+
+select t1.appid, t2.click, t1.total_per_app, ifnull(cast(t2.click,float),cast(t1.total_per_app),0) as clickThroughRate
+(select appid, count(*) as total_per_app
+from dialoglog
+group by appid) t1 left join
+(select appid, count(type) as click
+from dialoglog
+where type = 'click'
+group by appid) t2
+order by clickThroughRate desc
