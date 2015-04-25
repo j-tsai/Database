@@ -1,3 +1,4 @@
+# clickThroughRate = tapply(x$type,x$app,function(x) sum(x=='click')/length(x))
 schema:
 dialoglog(uid int, appid int, type char {"imp" or "click"}, ds timestamp)
 
